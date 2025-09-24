@@ -12,6 +12,7 @@ import modeloDatos.Chofer;
 import modeloDatos.ChoferTemporario;
 
 public class ChoferTemporarioTest {
+	ChoferTemporario chof;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -23,6 +24,7 @@ public class ChoferTemporarioTest {
 
 	@Before
 	public void setUp() throws Exception {
+		chof = new ChoferTemporario("12345678", "Test");
 	}
 
 	@After
@@ -37,7 +39,6 @@ public class ChoferTemporarioTest {
 	}
 	@Test
 	public void testGetSueldoBruto() {
-		final ChoferTemporario chof = new ChoferTemporario("12345678", "Test");
 		assertTrue(chof.getSueldoBruto() == Chofer.getSueldoBasico());
 	}
 }
