@@ -11,7 +11,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import excepciones.ChoferRepetidoException;
+import excepciones.SinVehiculoParaPedidoException;
 import excepciones.UsuarioYaExisteException;
+import modeloDatos.Administrador;
 import modeloDatos.Auto;
 import modeloDatos.ChoferPermanente;
 import modeloDatos.Cliente;
@@ -25,6 +27,7 @@ public class EmpresaTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		emp = Empresa.getInstance(); 
+		emp.setUsuarioLogeado(Administrador.getInstance());
 	}
 
 	@AfterClass
@@ -102,11 +105,57 @@ public class EmpresaTest {
 			emp.agregarCliente(cliente.getNombreUsuario(), cliente.getPass(), cliente.getNombreReal());
 			emp.agregarChofer(new ChoferPermanente("test","test",2000,1));
 			emp.agregarVehiculo(new Auto("test",1,false));
+			emp.login(cliente.getNombreUsuario(), cliente.getPass());
 			emp.agregarPedido(pedido);
 			assertSame(emp.getPedidos().size(), 1);
 			assertSame(emp.getPedidoDeCliente(cliente), pedido);
 		} catch (Exception e) {
 			fail("No debería lanzar ninguna excepción: " + e.getMessage() + "\n" + e.getStackTrace());
 		}
+	}
+	@Test
+	public void testAgregarPedidoSinVehiculo() {
+		final Cliente cliente = new Cliente("test","test","test");
+		final Pedido pedido = new Pedido(cliente,1,false,false,1,Constantes.ZONA_STANDARD);
+		try {
+			emp.agregarCliente(cliente.getNombreUsuario(), cliente.getPass(), cliente.getNombreReal());
+			emp.agregarChofer(new ChoferPermanente("test","test",2000,1));
+			emp.login(cliente.getNombreUsuario(), cliente.getPass());
+			emp.agregarPedido(pedido);
+			fail("Debería lanzar SinVehiculoParaPedidoException");
+		} catch (SinVehiculoParaPedidoException e) {
+			assertSame(e.getPedido(),pedido);
+		}catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage() + "\n" + e.getStackTrace());
+		}
+	}
+	@Test
+	public void testAgregarPedidoClienteConViajeIniciado() {
+		final Cliente cliente = new Cliente("test","test","test");
+		final Pedido pedido = new Pedido(cliente,1,false,false,1,Constantes.ZONA_STANDARD);
+		try {
+			emp.agregarCliente(cliente.getNombreUsuario(), cliente.getPass(), cliente.getNombreReal());
+			emp.agregarChofer(new ChoferPermanente("test","test",2000,1));
+			emp.setUsuarioLogeado(Administrador.getInstance());
+			emp.agregarPedido(pedido);
+			fail("Debería lanzar SinVehiculoParaPedidoException");
+		} catch (SinVehiculoParaPedidoException e) {
+			assertSame(e.getPedido(),pedido);
+		}catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage() + "\n" + e.getStackTrace());
+		}
+	}
+	@Test
+	public void testSetUsuarioLogueado() {
+		emp.setUsuarioLogeado(Administrador.getInstance());
+		assertSame(emp.getUsuarioLogeado(), Administrador.getInstance());
+		assertTrue(emp.isAdmin());
+	}
+	@Test
+	public void testLogout() {
+		emp.setUsuarioLogeado(Administrador.getInstance());
+		emp.logout();
+		assertTrue(!emp.isAdmin());
+		assertTrue(emp.getUsuarioLogeado() == null);
 	}
 }
