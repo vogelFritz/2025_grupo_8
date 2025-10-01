@@ -1,4 +1,4 @@
-package tpfinal;
+package tpfinal.modeloDatos;
 
 import static org.junit.Assert.*;
 
