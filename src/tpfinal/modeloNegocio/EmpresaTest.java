@@ -13,6 +13,7 @@ import org.junit.Test;
 import excepciones.ChoferRepetidoException;
 import excepciones.SinVehiculoParaPedidoException;
 import excepciones.UsuarioYaExisteException;
+import excepciones.VehiculoRepetidoException;
 import modeloDatos.Administrador;
 import modeloDatos.Auto;
 import modeloDatos.ChoferPermanente;
@@ -143,6 +144,71 @@ public class EmpresaTest {
 			assertSame(e.getPedido(),pedido);
 		}catch (Exception e) {
 			fail("No debería lanzar esta excepción: " + e.getMessage() + "\n" + e.getStackTrace());
+		}
+	}
+	@Test
+	public void testAgregarVehiculo() {
+		final Auto auto = new Auto("test", 2, false);
+		try {
+			emp.agregarVehiculo(auto);
+			assertTrue(emp.getVehiculos().size() == 1);
+		} catch (Exception e) {
+			fail("No debería lanzar ninguna excepción");
+		}
+	}
+	@Test
+	public void testAgregarVehiculoRepetido() {
+		final Auto auto = new Auto("test", 2, false);
+		final Auto mismaPatente = new Auto("test", 2, false);
+		try {
+			emp.agregarVehiculo(auto);
+			emp.agregarVehiculo(mismaPatente);
+			fail("Debería lanzar VehiculoRepetidoException");
+		} catch (VehiculoRepetidoException e) {
+			assertSame(e.getPatentePrentendida(), "test");
+			assertSame(e.getVehiculoExistente(), auto);
+		}
+		catch (Exception e) {
+			fail("No debería lanzar esta excepción");
+		}
+	}
+	@Test
+	public void testCalificacionDeChofer() {
+		final ChoferPermanente chofer = new ChoferPermanente("1234","test",2000,0);
+		final Cliente cliente = new Cliente("test","test","test");
+		final Auto auto = new Auto("test",2,false);
+		final Pedido pedido = new Pedido(cliente,1,false,false,2,Constantes.ZONA_STANDARD);
+		try {
+			emp.agregarChofer(chofer);
+			emp.agregarCliente("test","test","test");
+			emp.login("test", "test");
+			emp.agregarVehiculo(auto);
+			emp.agregarPedido(pedido);
+			emp.crearViaje(pedido,chofer,auto);
+			emp.pagarYFinalizarViaje(5);
+			final double calificacion = emp.calificacionDeChofer(chofer);
+			assertTrue(calificacion == 5);
+		} catch (Exception e) {
+			fail("No debería lanzar ninguna excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testCalificacionDeChoferInexistente() {
+		final ChoferPermanente chofer = new ChoferPermanente("1234","test",2000,0);
+		final Cliente cliente = new Cliente("test","test","test");
+		final Auto auto = new Auto("test",2,false);
+		final Pedido pedido = new Pedido(cliente,1,false,false,2,Constantes.ZONA_STANDARD);
+		try {
+			emp.agregarCliente("test","test","test");
+			emp.login("test", "test");
+			emp.agregarVehiculo(auto);
+			emp.agregarPedido(pedido);
+			emp.crearViaje(pedido,chofer,auto);
+			emp.pagarYFinalizarViaje(5);
+			final double calificacion = emp.calificacionDeChofer(chofer);
+			assertTrue(calificacion == 5);
+		} catch (Exception e) {
+			fail("No debería lanzar ninguna excepción: " + e.getMessage());
 		}
 	}
 	@Test
