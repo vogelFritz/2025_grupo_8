@@ -54,8 +54,6 @@ public class EmpresaTest {
 		try {
 			emp.agregarChofer(chofer);
 			assertSame(emp.getChoferes().size(), 1);
-		} catch (ChoferRepetidoException e) {
-			fail("No debería lanzar esta excepción");
 		} catch (Exception e) {
 			fail("No debería lanzar esta excepción");
 		}
@@ -80,8 +78,6 @@ public class EmpresaTest {
 		try {
 			emp.agregarCliente("test", "test", "test");
 			assertSame(emp.getClientes().size(), 1);
-		} catch (UsuarioYaExisteException e) {
-			fail("No debería lanzar esta excepción");
 		} catch (Exception e) {
 			fail("No debería lanzar esta excepción");
 		}
