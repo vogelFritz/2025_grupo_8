@@ -2,6 +2,7 @@ package tpfinal.modeloNegocio;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.junit.After;
@@ -11,14 +12,20 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import excepciones.ChoferRepetidoException;
+import excepciones.ClienteConPedidoPendienteException;
+import excepciones.ClienteConViajePendienteException;
+import excepciones.ClienteNoExisteException;
 import excepciones.SinVehiculoParaPedidoException;
+import excepciones.SinViajesException;
 import excepciones.UsuarioYaExisteException;
 import excepciones.VehiculoRepetidoException;
 import modeloDatos.Administrador;
 import modeloDatos.Auto;
 import modeloDatos.ChoferPermanente;
 import modeloDatos.Cliente;
+import modeloDatos.Moto;
 import modeloDatos.Pedido;
+import modeloDatos.Vehiculo;
 import modeloNegocio.Empresa;
 import util.Constantes;
 
@@ -41,6 +48,8 @@ public class EmpresaTest {
 		emp.setClientes(new HashMap<>());
 		emp.setVehiculos(new HashMap<>());
 		emp.setPedidos(new HashMap<>());
+		emp.setViajesIniciados(new HashMap<>());
+		emp.setViajesTerminados(new ArrayList<>());
 	}
 
 	@After
@@ -85,8 +94,8 @@ public class EmpresaTest {
 	@Test
 	public void testAgregarClienteConNombreUsado() {
 		try {
-			emp.agregarCliente("test", "test2", "test3");
-			emp.agregarCliente("test", "test2", "test3");
+			emp.agregarCliente("test", "test", "test");
+			emp.agregarCliente("test", "test", "test");
 			fail("Debería haber lanzado una excepción");
 		} catch (UsuarioYaExisteException e) {
 			assertSame(e.getUsuarioPretendido(), "test");
@@ -101,13 +110,68 @@ public class EmpresaTest {
 		try {
 			emp.agregarCliente(cliente.getNombreUsuario(), cliente.getPass(), cliente.getNombreReal());
 			emp.agregarChofer(new ChoferPermanente("test","test",2000,1));
-			emp.agregarVehiculo(new Auto("test",1,false));
-			emp.login(cliente.getNombreUsuario(), cliente.getPass());
+			emp.agregarVehiculo(new Moto("test"));
 			emp.agregarPedido(pedido);
 			assertSame(emp.getPedidos().size(), 1);
 			assertSame(emp.getPedidoDeCliente(cliente), pedido);
 		} catch (Exception e) {
 			fail("No debería lanzar ninguna excepción: " + e.getMessage() + "\n" + e.getStackTrace());
+		}
+	}
+	@Test
+	public void testAgregarPedidoClienteNoExiste() {
+		final Cliente cliente = new Cliente("test","test","test");
+		final Pedido pedido = new Pedido(cliente,1,false,false,1,Constantes.ZONA_STANDARD);
+		try {
+			emp.agregarChofer(new ChoferPermanente("test","test",2000,1));
+			emp.agregarVehiculo(new Moto("test"));
+			emp.agregarPedido(pedido);
+			fail("Debería lanzar ClienteNoExisteException");
+		} catch (ClienteNoExisteException e) {
+		}
+		catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage() + "\n" + e.getStackTrace());
+		}
+	}
+	@Test
+	public void testAgregarPedidoClienteConViajeIniciado() {
+		final Cliente cliente = new Cliente("test","test","test");
+		final Pedido pedido = new Pedido(cliente,1,false,false,1,Constantes.ZONA_STANDARD);
+		final Pedido pedido2 = new Pedido(cliente,1,false,false,1,Constantes.ZONA_STANDARD);
+		final ChoferPermanente chofer = new ChoferPermanente("test","test",2000,1);
+		try {
+			emp.agregarCliente(cliente.getNombreUsuario(), cliente.getPass(), cliente.getNombreReal());
+			emp.agregarChofer(chofer);
+			emp.setUsuarioLogeado(Administrador.getInstance());
+			emp.agregarVehiculo(new Moto("test"));
+			emp.agregarPedido(pedido2);
+			final ArrayList<Vehiculo> vs = emp.vehiculosOrdenadosPorPedido(pedido2);
+			final Vehiculo v = vs.getFirst();
+			emp.crearViaje(pedido2, chofer, v);
+			emp.agregarPedido(pedido);
+			fail("Debería lanzar ClienteConViajePendienteException");
+		} catch (ClienteConViajePendienteException e) {
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage() + "\n" + e.getStackTrace());
+		}
+	}
+	@Test
+	public void testAgregarPedidoClienteConPedidoPendiente() {
+		final Cliente cliente = new Cliente("test","test","test");
+		final Pedido pedido = new Pedido(cliente,1,false,false,1,Constantes.ZONA_STANDARD);
+		final Pedido pedido2 = new Pedido(cliente,1,false,false,1,Constantes.ZONA_STANDARD);
+		final ChoferPermanente chofer = new ChoferPermanente("test","test",2000,1);
+		try {
+			emp.agregarCliente(cliente.getNombreUsuario(), cliente.getPass(), cliente.getNombreReal());
+			emp.agregarChofer(chofer);
+			emp.setUsuarioLogeado(Administrador.getInstance());
+			emp.agregarVehiculo(new Moto("test"));
+			emp.agregarPedido(pedido2);
+			emp.agregarPedido(pedido);
+			fail("Debería lanzar ClienteConPedidoPendienteException");
+		} catch (ClienteConPedidoPendienteException e) {
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage() + "\n" + e.getStackTrace());
 		}
 	}
 	@Test
@@ -127,24 +191,8 @@ public class EmpresaTest {
 		}
 	}
 	@Test
-	public void testAgregarPedidoClienteConViajeIniciado() {
-		final Cliente cliente = new Cliente("test","test","test");
-		final Pedido pedido = new Pedido(cliente,1,false,false,1,Constantes.ZONA_STANDARD);
-		try {
-			emp.agregarCliente(cliente.getNombreUsuario(), cliente.getPass(), cliente.getNombreReal());
-			emp.agregarChofer(new ChoferPermanente("test","test",2000,1));
-			emp.setUsuarioLogeado(Administrador.getInstance());
-			emp.agregarPedido(pedido);
-			fail("Debería lanzar SinVehiculoParaPedidoException");
-		} catch (SinVehiculoParaPedidoException e) {
-			assertSame(e.getPedido(),pedido);
-		}catch (Exception e) {
-			fail("No debería lanzar esta excepción: " + e.getMessage() + "\n" + e.getStackTrace());
-		}
-	}
-	@Test
 	public void testAgregarVehiculo() {
-		final Auto auto = new Auto("test", 2, false);
+		final Auto auto = new Auto("test", 1, false);
 		try {
 			emp.agregarVehiculo(auto);
 			assertTrue(emp.getVehiculos().size() == 1);
@@ -154,15 +202,15 @@ public class EmpresaTest {
 	}
 	@Test
 	public void testAgregarVehiculoRepetido() {
-		final Auto auto = new Auto("test", 2, false);
-		final Auto mismaPatente = new Auto("test", 2, false);
+		final Auto auto = new Auto("test", 1, false);
+		final Auto mismaPatente = new Auto("test", 1, false);
 		try {
 			emp.agregarVehiculo(auto);
 			emp.agregarVehiculo(mismaPatente);
 			fail("Debería lanzar VehiculoRepetidoException");
 		} catch (VehiculoRepetidoException e) {
 			assertSame(e.getPatentePrentendida(), "test");
-			assertSame(e.getVehiculoExistente(), auto);
+			assertTrue(e.getVehiculoExistente() == auto);
 		}
 		catch (Exception e) {
 			fail("No debería lanzar esta excepción");
@@ -170,7 +218,7 @@ public class EmpresaTest {
 	}
 	@Test
 	public void testCalificacionDeChofer() {
-		final ChoferPermanente chofer = new ChoferPermanente("1234","test",2000,0);
+		final ChoferPermanente chofer = new ChoferPermanente("test","test",2000,0);
 		final Cliente cliente = new Cliente("test","test","test");
 		final Auto auto = new Auto("test",2,false);
 		final Pedido pedido = new Pedido(cliente,1,false,false,2,Constantes.ZONA_STANDARD);
@@ -186,6 +234,18 @@ public class EmpresaTest {
 			assertTrue(calificacion == 5);
 		} catch (Exception e) {
 			fail("No debería lanzar ninguna excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testCalificacionDeChoferSinViajes() {
+		final ChoferPermanente chofer = new ChoferPermanente("test1","test1",2000,0);
+		try {
+			emp.agregarChofer(chofer);
+			emp.calificacionDeChofer(chofer);
+			fail("Debería lanzar SinViajesException");
+		} catch (SinViajesException e) {
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
 		}
 	}
 	@Test
