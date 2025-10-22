@@ -50,6 +50,8 @@ public class EmpresaTest {
 		emp.setPedidos(new HashMap<>());
 		emp.setViajesIniciados(new HashMap<>());
 		emp.setViajesTerminados(new ArrayList<>());
+		emp.setChoferesDesocupados(new ArrayList<>());
+		emp.setVehiculosDesocupados(new ArrayList<>());
 	}
 
 	@After
@@ -109,6 +111,7 @@ public class EmpresaTest {
 		final Pedido pedido = new Pedido(cliente,1,false,false,1,Constantes.ZONA_STANDARD);
 		try {
 			emp.agregarCliente(cliente.getNombreUsuario(), cliente.getPass(), cliente.getNombreReal());
+			setUnicoClienteRegistrado(cliente);
 			emp.agregarChofer(new ChoferPermanente("test","test",2000,1));
 			emp.agregarVehiculo(new Moto("test"));
 			emp.agregarPedido(pedido);
@@ -141,6 +144,7 @@ public class EmpresaTest {
 		final ChoferPermanente chofer = new ChoferPermanente("test","test",2000,1);
 		try {
 			emp.agregarCliente(cliente.getNombreUsuario(), cliente.getPass(), cliente.getNombreReal());
+			setUnicoClienteRegistrado(cliente);
 			emp.agregarChofer(chofer);
 			emp.setUsuarioLogeado(Administrador.getInstance());
 			emp.agregarVehiculo(new Moto("test"));
@@ -163,6 +167,7 @@ public class EmpresaTest {
 		final ChoferPermanente chofer = new ChoferPermanente("test","test",2000,1);
 		try {
 			emp.agregarCliente(cliente.getNombreUsuario(), cliente.getPass(), cliente.getNombreReal());
+			setUnicoClienteRegistrado(cliente);
 			emp.agregarChofer(chofer);
 			emp.setUsuarioLogeado(Administrador.getInstance());
 			emp.agregarVehiculo(new Moto("test"));
@@ -180,6 +185,7 @@ public class EmpresaTest {
 		final Pedido pedido = new Pedido(cliente,1,false,false,1,Constantes.ZONA_STANDARD);
 		try {
 			emp.agregarCliente(cliente.getNombreUsuario(), cliente.getPass(), cliente.getNombreReal());
+			setUnicoClienteRegistrado(cliente);
 			emp.agregarChofer(new ChoferPermanente("test","test",2000,1));
 			emp.login(cliente.getNombreUsuario(), cliente.getPass());
 			emp.agregarPedido(pedido);
@@ -225,6 +231,7 @@ public class EmpresaTest {
 		try {
 			emp.agregarChofer(chofer);
 			emp.agregarCliente("test","test","test");
+			setUnicoClienteRegistrado(cliente);
 			emp.login("test", "test");
 			emp.agregarVehiculo(auto);
 			emp.agregarPedido(pedido);
@@ -256,6 +263,7 @@ public class EmpresaTest {
 		final Pedido pedido = new Pedido(cliente,1,false,false,2,Constantes.ZONA_STANDARD);
 		try {
 			emp.agregarCliente("test","test","test");
+			setUnicoClienteRegistrado(cliente);
 			emp.login("test", "test");
 			emp.agregarVehiculo(auto);
 			emp.agregarPedido(pedido);
@@ -279,5 +287,11 @@ public class EmpresaTest {
 		emp.logout();
 		assertTrue(!emp.isAdmin());
 		assertTrue(emp.getUsuarioLogeado() == null);
+	}
+	
+	public void setUnicoClienteRegistrado(Cliente cliente) {
+		final HashMap<String, Cliente> clientes = new HashMap<>();
+		clientes.put(cliente.getNombreUsuario(), cliente);
+		emp.setClientes(clientes);
 	}
 }
