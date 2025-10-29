@@ -21,10 +21,12 @@ import excepciones.UsuarioYaExisteException;
 import excepciones.VehiculoRepetidoException;
 import modeloDatos.Administrador;
 import modeloDatos.Auto;
+import modeloDatos.Chofer;
 import modeloDatos.ChoferPermanente;
 import modeloDatos.Cliente;
 import modeloDatos.Moto;
 import modeloDatos.Pedido;
+import modeloDatos.Usuario;
 import modeloDatos.Vehiculo;
 import modeloNegocio.Empresa;
 import util.Constantes;
@@ -52,6 +54,7 @@ public class EmpresaTest {
 		emp.setViajesTerminados(new ArrayList<>());
 		emp.setChoferesDesocupados(new ArrayList<>());
 		emp.setVehiculosDesocupados(new ArrayList<>());
+		emp.setUsuarioLogeado(null);
 	}
 
 	@After
@@ -288,6 +291,175 @@ public class EmpresaTest {
 		assertTrue(!emp.isAdmin());
 		assertTrue(emp.getUsuarioLogeado() == null);
 	}
+	
+	@Test
+	public void testGetUsuarioLogeado() {
+		try {
+			final Cliente usuario1 = new Cliente("test","test","test");
+			emp.setUsuarioLogeado(usuario1);
+			final Usuario resultado = emp.getUsuarioLogeado();
+			assertTrue(resultado == usuario1);
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testGetUsuarioLogeadoRetornaNull() {
+		try {
+			emp.setUsuarioLogeado(null);
+			final Usuario resultado = emp.getUsuarioLogeado();
+			assertTrue(resultado == null);
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testGetChoferesDesocupadosUnoDesocupado() {
+		try {
+			final Chofer choferDesocupado = new ChoferPermanente("test","test",2000,1);
+			emp.agregarChofer(choferDesocupado);
+			final ArrayList<Chofer> desocupados = emp.getChoferesDesocupados();
+			assertTrue(desocupados.size() == 1);
+			assertTrue(desocupados.getFirst() == choferDesocupado);
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testGetChoferesDesocupadosUnoOcupado() {
+		try {
+			final Chofer choferOcupado = new ChoferPermanente("test","test",2000,1);
+			emp.agregarChofer(choferOcupado);
+			final Cliente cliente = new Cliente("test","test","test");
+			emp.agregarCliente("test", "test", "test");
+			setUnicoClienteRegistrado(cliente);
+			final Pedido pedido = new Pedido(cliente,1,false,false,2,Constantes.ZONA_STANDARD);
+			final Auto auto = new Auto("test",4,true);
+			emp.agregarVehiculo(auto);
+			emp.agregarPedido(pedido);
+			emp.crearViaje(pedido, choferOcupado, auto);
+			final ArrayList<Chofer> desocupados = emp.getChoferesDesocupados();
+			assertTrue(desocupados.isEmpty());
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testGetChoferesDesocupadosNingunChofer() {
+		try {
+			final ArrayList<Chofer> desocupados = emp.getChoferesDesocupados();
+			assertTrue(desocupados.isEmpty());
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testGetChoferesDesocupadosUnoOcupadoYUnoDesocupado() {
+		try {
+			final Chofer choferDesocupado = new ChoferPermanente("test1","test1",2000,1);
+			emp.agregarChofer(choferDesocupado);
+			final Chofer choferOcupado = new ChoferPermanente("test2","test2",2000,1);
+			emp.agregarChofer(choferOcupado);
+			final Cliente cliente = new Cliente("test","test","test");
+			emp.agregarCliente("test", "test", "test");
+			setUnicoClienteRegistrado(cliente);
+			final Pedido pedido = new Pedido(cliente,1,false,false,2,Constantes.ZONA_STANDARD);
+			final Auto auto = new Auto("test",4,true);
+			emp.agregarVehiculo(auto);
+			emp.agregarPedido(pedido);
+			emp.crearViaje(pedido, choferOcupado, auto);
+			final ArrayList<Chofer> desocupados = emp.getChoferesDesocupados();
+			assertTrue(desocupados.size() == 1);
+			assertTrue(desocupados.getFirst() == choferDesocupado);
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testSetChoferesDesocupadosNingunChofer() {
+		try {
+			final ArrayList<Chofer> choferesDesocupados = new ArrayList<>(0);
+			emp.setChoferesDesocupados(choferesDesocupados);
+			assertTrue(emp.getChoferesDesocupados().isEmpty());
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testSetChoferesDesocupadosUnChofer() {
+		try {
+			final Chofer chofer1 = new ChoferPermanente("test1", "test1", 2000, 1);
+			final ArrayList<Chofer> choferesDesocupados = new ArrayList<>(1);
+			choferesDesocupados.add(chofer1);
+			emp.setChoferesDesocupados(choferesDesocupados);
+			assertTrue(emp.getChoferesDesocupados().size() == 1);
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testSetChoferesDesocupadosDosChoferes() {
+		try {
+			final Chofer chofer1 = new ChoferPermanente("test1", "test1", 2000, 1);
+			final Chofer chofer2 = new ChoferPermanente("test2", "test2", 2000, 1);
+			final ArrayList<Chofer> choferesDesocupados = new ArrayList<>(2);
+			choferesDesocupados.add(chofer1);
+			choferesDesocupados.add(chofer2);
+			emp.setChoferesDesocupados(choferesDesocupados);
+			assertTrue(emp.getChoferesDesocupados().size() == 2);
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testSetChoferesNingunChofer() {
+		try {
+			final HashMap<String,Chofer> choferesDesocupados = new HashMap<>(0);
+			emp.setChoferes(choferesDesocupados);
+			assertTrue(emp.getChoferes().isEmpty());
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testSetChoferesDosChoferes() {
+		try {
+			final Chofer chofer1 = new ChoferPermanente("test1", "test1", 2000, 1);
+			final Chofer chofer2 = new ChoferPermanente("test2", "test2", 2000, 1);
+			final HashMap<String,Chofer> choferesDesocupados = new HashMap<>(2);
+			choferesDesocupados.put(chofer1.getDni(), chofer1);
+			choferesDesocupados.put(chofer2.getDni(), chofer2);
+			emp.setChoferes(choferesDesocupados);
+			assertTrue(emp.getChoferes().size() == 2);
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testGetChoferesNingunChofer() {
+		try {
+			assertTrue(emp.getChoferes().isEmpty());
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testGetChoferesUnChofer() {
+		try {
+			final Chofer chofer1 = new ChoferPermanente("test1", "test1", 2000, 1);
+			emp.agregarChofer(chofer1);
+			assertTrue(emp.getChoferes().size() == 1);
+			assertTrue(emp.getChoferes().get(chofer1.getDni()) == chofer1);
+		} catch (Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	
+	
 	
 	public void setUnicoClienteRegistrado(Cliente cliente) {
 		final HashMap<String, Cliente> clientes = new HashMap<>();
