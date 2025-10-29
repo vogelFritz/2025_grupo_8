@@ -8,6 +8,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import modeloDatos.Auto;
+import modeloDatos.Chofer;
+import modeloDatos.ChoferPermanente;
 import modeloDatos.ChoferTemporario;
 import modeloDatos.Cliente;
 import modeloDatos.Moto;
@@ -45,5 +48,74 @@ public class ViajeTest {
 		assertSame(viaje.getPedido(), pedido);
 		assertSame(viaje.getVehiculo(), moto);
 	}
-
+	@Test
+	public void testGetValorStandard() {
+		try {
+			final Auto auto = new Auto("test",4,true);
+			final Chofer chofer = new ChoferPermanente("test","test",2000,1);
+			final Cliente cliente = new Cliente("test","test","test");
+			final Pedido pedido = new Pedido(cliente,2,false,false,5,Constantes.ZONA_STANDARD);
+			final Viaje viaje = new Viaje(pedido,chofer,auto);
+			Viaje.setValorBase(100);
+			assertTrue(viaje.getValor() == 170);
+		} catch(Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testGetValorSinAsfaltar() {
+		try {
+			final Auto auto = new Auto("test",4,true);
+			final Chofer chofer = new ChoferPermanente("test","test",2000,1);
+			final Cliente cliente = new Cliente("test","test","test");
+			final Pedido pedido = new Pedido(cliente,2,false,false,5,Constantes.ZONA_SIN_ASFALTAR);
+			final Viaje viaje = new Viaje(pedido,chofer,auto);
+			Viaje.setValorBase(100);
+			assertTrue(viaje.getValor() == 215);
+		} catch(Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testGetValorZonaPeligrosa() {
+		try {
+			final Auto auto = new Auto("test",4,true);
+			final Chofer chofer = new ChoferPermanente("test","test",2000,1);
+			final Cliente cliente = new Cliente("test","test","test");
+			final Pedido pedido = new Pedido(cliente,2,false,false,5,Constantes.ZONA_PELIGROSA);
+			final Viaje viaje = new Viaje(pedido,chofer,auto);
+			Viaje.setValorBase(100);
+			assertTrue(viaje.getValor() == 220);
+		} catch(Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testGetValorConMascota() {
+		try {
+			final Auto auto = new Auto("test",4,true);
+			final Chofer chofer = new ChoferPermanente("test","test",2000,1);
+			final Cliente cliente = new Cliente("test","test","test");
+			final Pedido pedido = new Pedido(cliente,2,true,false,5,Constantes.ZONA_STANDARD);
+			final Viaje viaje = new Viaje(pedido,chofer,auto);
+			Viaje.setValorBase(100);
+			assertTrue(viaje.getValor() == 220);
+		} catch(Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
+	@Test
+	public void testGetValorConBaul() {
+		try {
+			final Auto auto = new Auto("test",4,true);
+			final Chofer chofer = new ChoferPermanente("test","test",2000,1);
+			final Cliente cliente = new Cliente("test","test","test");
+			final Pedido pedido = new Pedido(cliente,2,false,true,5,Constantes.ZONA_STANDARD);
+			final Viaje viaje = new Viaje(pedido,chofer,auto);
+			Viaje.setValorBase(100);
+			assertTrue(viaje.getValor() == 145);
+		} catch(Exception e) {
+			fail("No debería lanzar esta excepción: " + e.getMessage());
+		}
+	}
 }
