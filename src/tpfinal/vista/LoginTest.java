@@ -14,7 +14,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import controlador.Controlador;
+import excepciones.UsuarioNoExisteException;
 import util.Constantes;
+import util.Mensajes;
 import vista.Ventana;
 
 public class LoginTest {
@@ -123,6 +125,8 @@ public class LoginTest {
 			final Robot robot = new Robot();
 			final Controlador controlador = new Controlador();
 			final Ventana ventana = new Ventana();
+			final FalsoOptionPane falsoOptionPane = new FalsoOptionPane();
+			ventana.setOptionPane(falsoOptionPane);
 			controlador.setVista(ventana);
 			robot.delay(1000);
 			final Component nombreUsuarioInput = TestUtils.getComponentForName(ventana,Constantes.NOMBRE_USUARIO);
@@ -136,6 +140,8 @@ public class LoginTest {
 			final Component cerrarSesionAdmin = TestUtils.getComponentForName(ventana, Constantes.CERRAR_SESION_ADMIN);
 			assertTrue(cerrarSesionAdmin == null);
 			assertTrue(ventana.getOptionPane() != null);
+			final Exception errorEsperado = new UsuarioNoExisteException("test");
+			assertTrue(falsoOptionPane.getMensaje() == errorEsperado.getMessage());
 		} catch(Exception e) {
 			fail("No debería lanzar excepción: " + e.getMessage());
 		}
