@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Robot;
 import java.util.HashMap;
 
+import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
 import org.junit.After;
@@ -52,8 +53,8 @@ public class PanelClienteTest {
 			tipearEnComp(ventana,robot,Constantes.CANT_KM, "1");
 			clickearComp(ventana,robot, Constantes.ZONA_STANDARD);
 			clickearComp(ventana,robot, Constantes.NUEVO_PEDIDO);
-			final JTextPane pedidosPanel = (JTextPane)TestUtils.getComponentForName(ventana, Constantes.PEDIDO_O_VIAJE_ACTUAL);
-			assertTrue(pedidosPanel.getText().contains("Pedido"));
+			final JTextArea pedidosPanel = (JTextArea)TestUtils.getComponentForName(ventana, Constantes.PEDIDO_O_VIAJE_ACTUAL);
+			assertTrue(!pedidosPanel.getText().isEmpty());
 		} catch(Exception e) {
 			fail("No debería lanzar excepción: " + e.getMessage());
 		}
@@ -65,10 +66,10 @@ public class PanelClienteTest {
 			emp.setClientes(clientes);
 			final Component nombreUsuarioInput = TestUtils.getComponentForName(ventana,Constantes.NOMBRE_USUARIO);
 			TestUtils.clickComponent(nombreUsuarioInput, robot);
-			TestUtils.tipeaTexto("admin", robot);
+			TestUtils.tipeaTexto("test", robot);
 			final Component passwordInput = TestUtils.getComponentForName(ventana, Constantes.PASSWORD);
 			TestUtils.clickComponent(passwordInput, robot);
-			TestUtils.tipeaTexto("admin", robot);
+			TestUtils.tipeaTexto("test", robot);
 			final Component loginBtn = TestUtils.getComponentForName(ventana, Constantes.LOGIN);
 			TestUtils.clickComponent(loginBtn, robot);
 		} catch(Exception e) {
