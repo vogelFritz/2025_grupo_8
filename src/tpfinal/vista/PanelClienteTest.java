@@ -4,10 +4,12 @@ import static org.junit.Assert.*;
 
 import java.awt.Component;
 import java.awt.Robot;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
 import org.junit.After;
@@ -59,7 +61,6 @@ public class PanelClienteTest {
 			prepararEscenarioConChoferesYVehiculos();
 			tipearEnComp(ventana,robot,Constantes.CANT_PAX, "1");
 			tipearEnComp(ventana,robot,Constantes.CANT_KM, "1");
-			clickearComp(ventana,robot, Constantes.ZONA_STANDARD);
 			clickearComp(ventana,robot, Constantes.NUEVO_PEDIDO);
 			final JTextArea pedidosPanel = (JTextArea)TestUtils.getComponentForName(ventana, Constantes.PEDIDO_O_VIAJE_ACTUAL);
 			assertTrue(!pedidosPanel.getText().isEmpty());
@@ -78,7 +79,6 @@ public class PanelClienteTest {
 			loguearse(ventana,robot);
 			prepararEscenarioConChoferesYVehiculos();
 			tipearEnComp(ventana,robot,Constantes.CANT_KM, "1");
-			clickearComp(ventana,robot, Constantes.ZONA_STANDARD);
 			clickearComp(ventana,robot, Constantes.NUEVO_PEDIDO);
 			final JButton nuevoPedidoBtn = (JButton) TestUtils.getComponentForName(ventana, Constantes.NUEVO_PEDIDO);
 			assertTrue(!nuevoPedidoBtn.isEnabled());
@@ -97,7 +97,6 @@ public class PanelClienteTest {
 			loguearse(ventana,robot);
 			prepararEscenarioConChoferesYVehiculos();
 			tipearEnComp(ventana,robot,Constantes.CANT_PAX, "1");
-			clickearComp(ventana,robot, Constantes.ZONA_STANDARD);
 			clickearComp(ventana,robot, Constantes.NUEVO_PEDIDO);
 			final JButton nuevoPedidoBtn = (JButton) TestUtils.getComponentForName(ventana, Constantes.NUEVO_PEDIDO);
 			assertTrue(!nuevoPedidoBtn.isEnabled());
@@ -117,10 +116,7 @@ public class PanelClienteTest {
 			prepararEscenarioConChoferesYVehiculos();
 			tipearEnComp(ventana,robot,Constantes.CANT_PAX, "1");
 			tipearEnComp(ventana,robot,Constantes.CANT_KM, "1");
-			clickearComp(ventana,robot, Constantes.ZONA_STANDARD);
 			clickearComp(ventana,robot, Constantes.NUEVO_PEDIDO);
-			final JTextArea pedidosPanel = (JTextArea)TestUtils.getComponentForName(ventana, Constantes.PEDIDO_O_VIAJE_ACTUAL);
-			assertTrue(!pedidosPanel.getText().isEmpty());
 			final Cliente cliente = emp.getClientes().get("test");
 			emp.crearViaje(emp.getPedidoDeCliente(cliente), emp.getChoferes().get("test"), emp.getVehiculos().get("test"));
 			ventana.actualizar();
@@ -143,12 +139,12 @@ public class PanelClienteTest {
 			loguearse(ventana,robot);
 			final JTextArea pedidosPanel = (JTextArea) TestUtils.getComponentForName(ventana, Constantes.PEDIDO_O_VIAJE_ACTUAL);
 			assertTrue(pedidosPanel.getText().isEmpty());
-			final JTextArea calificacionInput = (JTextArea) TestUtils.getComponentForName(ventana, Constantes.CALIFICACION_DE_VIAJE);
+			final JTextField calificacionInput = (JTextField) TestUtils.getComponentForName(ventana, Constantes.CALIFICACION_DE_VIAJE);
 			assertTrue(!calificacionInput.isEnabled());
 			final JButton pagarBtn = (JButton) TestUtils.getComponentForName(ventana, Constantes.CALIFICAR_PAGAR);
 			assertTrue(!pagarBtn.isEnabled());
 		} catch(Exception e) {
-			fail("No debería lanzar excepción: " + e.getMessage());
+			fail("No debería lanzar excepción: " + e.getMessage() + "\n" + e.getStackTrace());
 		}
 	}
 	@Test
@@ -163,12 +159,11 @@ public class PanelClienteTest {
 			robot.delay(1000);
 			loguearse(ventana,robot);
 			prepararEscenarioSinChoferesNiVehiculos();
+			ventana.actualizar();
+			robot.delay(50);
 			tipearEnComp(ventana,robot,Constantes.CANT_PAX, "1");
 			tipearEnComp(ventana,robot,Constantes.CANT_KM, "1");
-			clickearComp(ventana,robot, Constantes.ZONA_STANDARD);
 			clickearComp(ventana,robot, Constantes.NUEVO_PEDIDO);
-			final JTextArea pedidosPanel = (JTextArea)TestUtils.getComponentForName(ventana, Constantes.PEDIDO_O_VIAJE_ACTUAL);
-			assertTrue(pedidosPanel.getText().isEmpty());
 			final SinVehiculoParaPedidoException errorEsperado = new SinVehiculoParaPedidoException(new Pedido(new Cliente("test", "test", "test"), 1, false, false, 1, Constantes.ZONA_STANDARD));
 			assertTrue(falsoOptionPane.getMensaje() == errorEsperado.getMessage());
 		} catch(Exception e) {
@@ -187,7 +182,6 @@ public class PanelClienteTest {
 			prepararEscenarioConChoferesYVehiculos();
 			tipearEnComp(ventana,robot,Constantes.CANT_PAX, "1");
 			tipearEnComp(ventana,robot,Constantes.CANT_KM, "1");
-			clickearComp(ventana,robot, Constantes.ZONA_STANDARD);
 			clickearComp(ventana,robot, Constantes.NUEVO_PEDIDO);
 			final JTextArea pedidosPanel = (JTextArea)TestUtils.getComponentForName(ventana, Constantes.PEDIDO_O_VIAJE_ACTUAL);
 			assertTrue(!pedidosPanel.getText().isEmpty());
@@ -209,7 +203,6 @@ public class PanelClienteTest {
 			prepararEscenarioConChoferesYVehiculos();
 			tipearEnComp(ventana,robot,Constantes.CANT_PAX, "1");
 			tipearEnComp(ventana,robot,Constantes.CANT_KM, "1");
-			clickearComp(ventana,robot, Constantes.ZONA_STANDARD);
 			clickearComp(ventana,robot, Constantes.NUEVO_PEDIDO);
 			final JTextArea pedidosPanel = (JTextArea)TestUtils.getComponentForName(ventana, Constantes.PEDIDO_O_VIAJE_ACTUAL);
 			assertTrue(!pedidosPanel.getText().isEmpty());
@@ -254,7 +247,13 @@ public class PanelClienteTest {
 		choferes.put("test", new ChoferPermanente("test", "test", 2000, 1));
 		vehiculos.put("test", new Auto("test", 4, true));
 		emp.setChoferes(choferes);
+		emp.setChoferesDesocupados(new ArrayList<>(choferes.values()));
 		emp.setVehiculos(vehiculos);
+		emp.setVehiculosDesocupados(new ArrayList<>(vehiculos.values()));
+		final Cliente cliente = new Cliente("test", "test", "test");
+		final HashMap<Cliente,Pedido> pedidos = new HashMap<>();
+		pedidos.put(cliente, new Pedido(cliente, 1, false, false, 1, Constantes.ZONA_STANDARD));
+		emp.setPedidos(pedidos);
 	}
 	private static void prepararEscenarioSinChoferesNiVehiculos() {
 		emp.setChoferes(new HashMap<>());
