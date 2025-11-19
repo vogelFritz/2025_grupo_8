@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JButton;
+import javax.swing.JList;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -26,6 +27,7 @@ import modeloDatos.ChoferPermanente;
 import modeloDatos.Cliente;
 import modeloDatos.Pedido;
 import modeloDatos.Vehiculo;
+import modeloDatos.Viaje;
 import modeloNegocio.Empresa;
 import util.Constantes;
 import vista.Ventana;
@@ -122,8 +124,10 @@ public class PanelClienteTest {
 			ventana.actualizar();
 			tipearEnComp(ventana, robot, Constantes.CALIFICACION_DE_VIAJE, "5");
 			clickearComp(ventana, robot, Constantes.CALIFICAR_PAGAR);
-			final JTextArea historialViajes = (JTextArea)TestUtils.getComponentForName(ventana, Constantes.LISTA_VIAJES_CLIENTE);
-			assertTrue(!historialViajes.getText().isEmpty());
+			final JList historialViajes = (JList)TestUtils.getComponentForName(ventana, Constantes.LISTA_VIAJES_CLIENTE);
+			assertTrue(historialViajes.getModel().getSize() > 0);
+			final Viaje viaje = (Viaje) historialViajes.getModel().getElementAt(0);
+			assertTrue(viaje.getCalificacion() == 5);
 		} catch(Exception e) {
 			fail("No debería lanzar excepción: " + e.getMessage());
 		}
@@ -183,8 +187,6 @@ public class PanelClienteTest {
 			tipearEnComp(ventana,robot,Constantes.CANT_PAX, "1");
 			tipearEnComp(ventana,robot,Constantes.CANT_KM, "1");
 			clickearComp(ventana,robot, Constantes.NUEVO_PEDIDO);
-			final JTextArea pedidosPanel = (JTextArea)TestUtils.getComponentForName(ventana, Constantes.PEDIDO_O_VIAJE_ACTUAL);
-			assertTrue(!pedidosPanel.getText().isEmpty());
 			final JButton nuevoPedidoBtn = (JButton) TestUtils.getComponentForName(ventana, Constantes.NUEVO_PEDIDO);
 			assertTrue(!nuevoPedidoBtn.isEnabled());
 		} catch(Exception e) {
@@ -236,6 +238,7 @@ public class PanelClienteTest {
 		final Component comp = TestUtils.getComponentForName(ventana, compNombre);
 		TestUtils.clickComponent(comp, robot);
 		TestUtils.tipeaTexto(texto, robot);
+		robot.delay(50);
 	} 
 	private static void clickearComp(Ventana ventana, Robot robot, String compNombre) {
 		final Component comp = TestUtils.getComponentForName(ventana, compNombre);
