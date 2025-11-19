@@ -1,0 +1,149 @@
+package tpfinal.Controlador;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import controlador.Controlador;
+import modeloNegocio.Empresa;
+import persistencia.EmpresaDTO;
+import persistencia.IPersistencia;
+import vista.IOptionPane;
+import vista.IVista;
+
+@SuppressWarnings("unchecked")
+public class controladorTestLeerEscribir {
+
+	private IVista vistaMock;
+	private IOptionPane optionPaneMock;
+	private IPersistencia<EmpresaDTO> persistenciaMock;
+	private EmpresaDTO dtoMock;
+	private Controlador controladorReal;
+	private Controlador controladorBajoPrueba;
+
+	@Before
+    public void setUp() throws Exception {
+        this.vistaMock = Mockito.mock(IVista.class);
+        this.optionPaneMock = Mockito.mock(IOptionPane.class);
+        
+        this.persistenciaMock = (IPersistencia<EmpresaDTO>) Mockito.mock(IPersistencia.class);
+        this.dtoMock = Mockito.mock(EmpresaDTO.class); // Mock de DTO vacío
+
+        this.controladorReal = new Controlador();
+        
+        this.controladorReal.setVista((IVista) this.vistaMock);
+        this.controladorReal.setPersistencia(this.persistenciaMock);
+
+        this.controladorBajoPrueba = Mockito.spy(this.controladorReal);
+        
+        when(this.vistaMock.getOptionPane()).thenReturn(this.optionPaneMock);
+
+        Empresa.getInstance().logout();
+        Empresa.getInstance().setClientes(new HashMap<>());
+        Empresa.getInstance().setChoferes(new HashMap<>());
+        Empresa.getInstance().setPedidos(new HashMap<>());
+        Empresa.getInstance().setChoferesDesocupados(new ArrayList<>());
+        Empresa.getInstance().setVehiculos(new HashMap<>());
+        Empresa.getInstance().setVehiculosDesocupados(new ArrayList<>());
+        Empresa.getInstance().setViajesIniciados(new HashMap<>());
+        Empresa.getInstance().setViajesTerminados(new ArrayList<>());
+
+    }
+	@Test
+    public void leer_deberiaCargarDatos() {
+        try {
+            when(this.persistenciaMock.leer()).thenReturn(this.dtoMock);
+        } catch (Exception e) {
+            fail("Falla en setup del mock (leer): " + e.getMessage());
+        }
+        doNothing().when(this.controladorBajoPrueba).escribir();
+
+        this.controladorBajoPrueba.leer();
+        
+        try {
+            verify(this.persistenciaMock).leer();
+        } catch (Exception e) {
+            fail("Falla en verify del mock (leer): " + e.getMessage());
+        }
+        verify(optionPaneMock, never()).ShowMessage(anyString());
+        
+
+        verify(this.controladorBajoPrueba, never()).escribir();
+    }
+	@Test
+    public void leer_MostrarErrorYEscribir() {
+        
+        try {
+            when(this.persistenciaMock.leer())
+                .thenThrow(new IOException("Archivo corrupto"));
+        } catch (Exception e) {
+            fail("Falla en setup del mock (leer): " + e.getMessage());
+        }
+
+        doNothing().when(this.controladorBajoPrueba).escribir();
+
+        this.controladorBajoPrueba.leer();
+
+        try {
+            verify(this.persistenciaMock).leer();
+        } catch (Exception e) {
+            fail("Falla en verify del mock (leer): " + e.getMessage());
+        }
+
+        verify(optionPaneMock).ShowMessage(anyString()); 
+        verify(this.controladorBajoPrueba).escribir();
+    }
+
+    @Test
+    public void escribir_DelegarEnPersistencia() {
+
+        try {
+            doNothing().when(this.persistenciaMock).escribir(any());
+        } catch (Exception e) {
+            fail("Falla en setup del mock (escribir): "+ e.getMessage());
+        }
+
+        this.controladorBajoPrueba.escribir();
+
+        try {
+            verify(this.persistenciaMock, times(1)).escribir(any());
+        } catch (Exception e) {
+            fail("Falla en verify del mock (escribir): " + e.getMessage());
+        }
+            
+        verify(optionPaneMock, never()).ShowMessage(anyString());
+    }
+    @Test
+    public void escribir_PersistenciaFalla() {
+
+        try {
+            doThrow(new IOException("Simulación: Permiso denegado")).when(this.persistenciaMock).escribir(any());
+        } catch (Exception e) {
+            fail("Falla en setup del mock (escribir): " + e.getMessage());
+        }
+
+        this.controladorBajoPrueba.escribir();
+
+        try {
+            verify(this.persistenciaMock, times(1)).escribir(any());
+        } catch (Exception e) {
+            fail("Falla en verify del mock (escribir): " + e.getMessage());
+        }
+
+        verify(optionPaneMock).ShowMessage(anyString()); 
+    }
+}
