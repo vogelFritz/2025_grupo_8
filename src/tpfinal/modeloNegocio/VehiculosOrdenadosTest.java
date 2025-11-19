@@ -1,4 +1,4 @@
-package empresa;
+package tpfinal.modeloNegocio;
 
 import static org.junit.Assert.assertEquals;
 

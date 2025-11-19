@@ -1,4 +1,4 @@
-package tpfinal.vista2;
+package tpfinal.vista;
 
 import static org.junit.Assert.*;
 
@@ -130,7 +130,7 @@ public class PanelAdministradorTest2 {
             emp.setChoferes(choferes);
             
             // Mockeamos el OptionPane en la ventana YA abierta
-            final FalsoOptionPane2 falsoOptionPane = new FalsoOptionPane2();
+            final FalsoOptionPane falsoOptionPane = new FalsoOptionPane();
             ventana.setOptionPane(falsoOptionPane);
             
             // Intentamos registrar el mismo DNI

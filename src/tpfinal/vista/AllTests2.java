@@ -1,10 +1,8 @@
-package tpfinal.vista2;
+package tpfinal.vista;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-
-import tpfinal.vista.RegisterTest2;
 
 /**
  * Suite de pruebas para ejecutar todos los tests de la vista en conjunto.
@@ -13,7 +11,7 @@ import tpfinal.vista.RegisterTest2;
 @RunWith(Suite.class)
 @SuiteClasses({
     LoginTest2.class,
-    RegisterTest2.class,
+    RegisterTest.class,
     PanelClienteTest2.class,
     PanelAdministradorTest2.class
 })

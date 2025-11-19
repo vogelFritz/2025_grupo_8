@@ -1,4 +1,4 @@
-package tpfinal.vista2;
+package tpfinal.vista;
 
 import static org.junit.Assert.*;
 
@@ -157,7 +157,7 @@ public class PanelClienteTest2 {
 			final Robot robot = new Robot();
 			final Controlador controlador = new Controlador();
 			final Ventana ventana = new Ventana();
-			final FalsoOptionPane2 falsoOptionPane = new FalsoOptionPane2();
+			final FalsoOptionPane falsoOptionPane = new FalsoOptionPane();
 			ventana.setOptionPane(falsoOptionPane);
 			controlador.setVista(ventana);
 			robot.delay(1000);

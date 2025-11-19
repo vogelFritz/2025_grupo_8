@@ -1,14 +1,8 @@
-package test; // Puedes ponerla en el paquete que prefieras
+package tpfinal.persistencia; // Puedes ponerla en el paquete que prefieras
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-
-// Importamos las clases de test que están en otros paquetes
-import tpfinal.persistencia.TestPersistenciaEmpresaDTO;
-import tpfinal.persistencia.TestUtilPersistencia;
-// Importamos la clase de test que está en este mismo paquete (o en 'test')
-import test.TestPersistenciaBIN;
 
 @RunWith(Suite.class)
 @SuiteClasses({
