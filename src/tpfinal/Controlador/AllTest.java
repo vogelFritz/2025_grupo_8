@@ -18,6 +18,6 @@ import org.junit.runners.Suite.SuiteClasses;
 	controladorTestNuevoViaje.class, 
 	controladorTestAgregarCliente.class, 
 })
-public class SuiteDePruebasControlador {
+public class AllTest {
 
 }

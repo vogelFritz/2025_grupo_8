@@ -19,9 +19,6 @@ import util.Constantes;
 
 public class TestPersistenciaEmpresaDTO {
 
-    // ----------------------------------------------------------
-    // ESCENARIO E1 – Constructor
-    // ----------------------------------------------------------
     @Test
     public void testConstructorDTO() {
         EmpresaDTO dto = new EmpresaDTO();
@@ -45,10 +42,6 @@ public class TestPersistenciaEmpresaDTO {
         assertTrue(dto.getViajesIniciados().isEmpty());
         assertTrue(dto.getViajesTerminados().isEmpty());
     }
-
-    // ----------------------------------------------------------
-    // ESCENARIOS E2.x – Un test por setter/getter
-    // ----------------------------------------------------------
 
     @Test
     public void testSetGetChoferes() {

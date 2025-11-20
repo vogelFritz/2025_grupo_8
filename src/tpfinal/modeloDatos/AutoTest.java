@@ -10,7 +10,6 @@ import modeloDatos.Pedido;
 
 public class AutoTest {
 
-    // --- Tests de Getters básicos ---
     
     @Test
     public void testGetPatente() {
@@ -30,7 +29,6 @@ public class AutoTest {
         assertEquals(4, a.getCantidadPlazas());
     }
 
-    // --- Tests de Lógica de Negocio (Puntaje) ---
 
     @Test
     public void testGetPuntajePedidoConBaul() {

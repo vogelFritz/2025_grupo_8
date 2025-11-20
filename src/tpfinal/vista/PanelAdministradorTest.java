@@ -72,10 +72,6 @@ public class PanelAdministradorTest {
         // ventana.dispose(); 
     }
 
-    // ========================================================================
-    // SECCIÓN 1: TESTS DE REGISTRO DE CHOFERES
-    // ========================================================================
-
     @Test
     public void testHabilitacionBotonChoferTemporario() {
         try {
@@ -149,10 +145,6 @@ public class PanelAdministradorTest {
         }
     }
 
-    // ========================================================================
-    // SECCIÓN 2: TESTS DE REGISTRO DE VEHÍCULOS
-    // ========================================================================
-
     @Test
     public void testHabilitacionBotonMoto() {
         try {
@@ -183,9 +175,6 @@ public class PanelAdministradorTest {
         }
     }
 
-    /**
-     * NUEVO TEST: Verifica que al registrar un vehículo, aparezca en la lista "Vehiculos Existentes"
-     */
     @Test
     public void testRegistroVehiculoExitosoEnLista() {
         try {
@@ -213,11 +202,6 @@ public class PanelAdministradorTest {
             fail("Excepción inesperada: " + e.getMessage());
         }
     }
-
-    // ========================================================================
-    // SECCIÓN 3: TESTS DE VISUALIZACIÓN (JLISTS)
-    // ========================================================================
-
     @Test
     public void testVisualizacionInfoChofer() {
         try {
@@ -240,10 +224,6 @@ public class PanelAdministradorTest {
             fail("Excepción inesperada: " + e.getMessage());
         }
     }
-
-    // ========================================================================
-    // SECCIÓN 4: TESTS DE GESTIÓN DE PEDIDOS (FLUJO COMPLEJO)
-    // ========================================================================
 
     @Test
     public void testCreacionNuevoViajeHabilitado() {
@@ -297,10 +277,6 @@ public class PanelAdministradorTest {
         }
     }
 
-    // ========================================================================
-    // SECCIÓN 5: TESTS DE NAVEGACIÓN / LOGOUT
-    // ========================================================================
-
     @Test
     public void testCerrarSesion() {
         try {
@@ -323,13 +299,6 @@ public class PanelAdministradorTest {
         }
     }
 
-    // ========================================================================
-    // MÉTODOS HELPER (UTILIDADES PARA ESTOS TESTS)
-    // ========================================================================
-
-    /**
-     * Realiza el flujo completo de login con admin/admin y espera a que cargue el panel.
-     */
     private static void loguearseComoAdmin(Ventana ventana, Robot robot) {
         // 1. Llenar Usuario
         final Component nombreUsuarioInput = TestUtils.getComponentForName(ventana, Constantes.NOMBRE_USUARIO);

@@ -19,8 +19,6 @@ public class GetVehiculosDesocupadosTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		//Vehiculo(String patente, int cantidadPlazas, boolean mascota)
-		
 		
 		emp = Empresa.getInstance();		
 		Vehiculo v1 = new Auto("1", 4, true);

@@ -34,7 +34,6 @@ public class EmpresaTestCrearViaje {
 
     private Empresa empresa;
 
-    // Entidades para Escenario 1
     private Cliente cliente1;
     private Pedido pedido1;
     private Chofer chofer1;
@@ -52,7 +51,6 @@ public class EmpresaTestCrearViaje {
         // Obtenemos la instancia Singleton
         empresa = Empresa.getInstance();
 
-        // --- Inicialización de objetos para el escenario ---
         cliente1 = new Cliente("user1", "pass1", "Cliente Uno");
         cliente2 = new Cliente("user2", "pass2", "Cliente Dos");
 

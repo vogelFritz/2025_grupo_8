@@ -4,10 +4,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import modeloDatos.ChoferPermanente;
+
 @RunWith(Suite.class)
 @SuiteClasses({
     AdministradorTest.class,
     ChoferTemporarioTest.class,
+    ChoferPermanenteTest.class,
     MotoTest.class,
     PedidoTest.class,
     ViajeTest.class,
